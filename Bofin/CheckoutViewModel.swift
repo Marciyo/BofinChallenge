@@ -11,11 +11,16 @@ import Combine
 
 final class CheckoutViewModel {
     @Published var products: [Product] = []
-    
+
     func addProduct(type: Product.ProductType) {
         let product = Product(type: type)
         products.append(product)
 
         print("Added \(product). Current count: \(products.count)")
+    }
+
+    func prepareTotalString(from products: [Product]) -> String {
+        let total = products.map { $0.price}.reduce(0, +)
+        return "Total: \(total)p"
     }
 }

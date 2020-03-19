@@ -17,6 +17,7 @@ final class CheckoutViewController: UIViewController {
     @IBOutlet weak private var orangeButton: UIButton!
     @IBOutlet weak private var appleButton: UIButton!
     @IBOutlet weak private var tableView: UITableView!
+    @IBOutlet weak private var totalLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +30,8 @@ final class CheckoutViewController: UIViewController {
         tableView.dataSource = dataSource
 
         cancellable = viewModel.$products.sink { products in
-            self.update(with: products)
+            self.totalLabel.text = self.viewModel.prepareTotalString(from: products)
+            self.updateTableView(with: products)
         }
     }
 
@@ -45,12 +47,11 @@ final class CheckoutViewController: UIViewController {
 
 private extension CheckoutViewController {
     enum Section {
-        case shoppingList
+        case checkout
     }
 
     func makeDataSource() -> UITableViewDiffableDataSource<Section, Product> {
-
-        return UITableViewDiffableDataSource(
+        UITableViewDiffableDataSource(
             tableView: tableView,
             cellProvider: { tableView, indexPath, contact in
                 let cell = tableView.dequeueReusableCell(
@@ -61,13 +62,13 @@ private extension CheckoutViewController {
                 cell.textLabel?.text = "\(contact.name). \(contact.price)p"
 
                 return cell
-            }
+        }
         )
     }
 
-    func update(with products: [Product], animate: Bool = true) {
+    func updateTableView(with products: [Product], animate: Bool = true) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
-        snapshot.appendSections([.shoppingList])
+        snapshot.appendSections([.checkout])
         snapshot.appendItems(products)
         dataSource.apply(snapshot, animatingDifferences: animate)
     }
