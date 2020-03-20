@@ -14,8 +14,6 @@ final class CheckoutViewController: UIViewController {
     private let viewModel = CheckoutViewModel()
     private var cancellable: AnyCancellable?
 
-    @IBOutlet weak private var orangeButton: UIButton!
-    @IBOutlet weak private var appleButton: UIButton!
     @IBOutlet weak private var tableView: UITableView!
     @IBOutlet weak private var totalLabel: UILabel!
 
@@ -26,7 +24,7 @@ final class CheckoutViewController: UIViewController {
 
     private func setupUI() {
         tableView.register(UITableViewCell.self,
-                   forCellReuseIdentifier: "UITableViewCell")
+                           forCellReuseIdentifier: String(describing: UITableViewCell.self))
         tableView.dataSource = dataSource
 
         cancellable = viewModel.$products.sink { products in
@@ -36,15 +34,16 @@ final class CheckoutViewController: UIViewController {
     }
 
     // MARK: - Button Actions
-    @IBAction func appleButtonAction(_ sender: Any) {
+    @IBAction func appleButtonTapAction(_ sender: Any) {
         viewModel.addProduct(type: .apple)
     }
 
-    @IBAction func orangeButtonAction(_ sender: Any) {
+    @IBAction func orangeButtonTapAction(_ sender: Any) {
         viewModel.addProduct(type: .orange)
     }
 }
 
+/// MARK: - TableViewDataSource
 private extension CheckoutViewController {
     enum Section {
         case checkout
@@ -55,11 +54,11 @@ private extension CheckoutViewController {
             tableView: tableView,
             cellProvider: { tableView, indexPath, contact in
                 let cell = tableView.dequeueReusableCell(
-                    withIdentifier: "UITableViewCell",
+                    withIdentifier: String(describing: UITableViewCell.self),
                     for: indexPath
                 )
 
-                cell.textLabel?.text = "\(contact.name). \(contact.price)p"
+                cell.textLabel?.text = "\(contact.name)"
 
                 return cell
         }

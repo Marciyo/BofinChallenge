@@ -44,17 +44,17 @@ class CheckoutViewModelTests: XCTestCase {
         viewModel.togglePromotion(for: .apple)
         let apple = Product(type: .apple)
 
-        let totalString = viewModel.prepareTotalString(from: [apple, apple, apple, apple])
+        let promotionTotal = viewModel.prepareTotalString(from: [apple, apple, apple, apple])
 
-        XCTAssertEqual(totalString, "Total: 120p")
+        XCTAssertEqual(promotionTotal, "Total: 120p")
     }
 
     func testOrangePromotion() {
         viewModel.togglePromotion(for: .orange)
         let orange = Product(type: .orange)
 
-        let totalString = viewModel.prepareTotalString(from: [orange, orange, orange, orange])
+        let promotionTotal = viewModel.prepareTotalString(from: [orange, orange, orange, orange])
 
-        XCTAssertEqual(totalString, "Total: 75p")
+        XCTAssertEqual(promotionTotal, "Total: 75p")
     }
 }

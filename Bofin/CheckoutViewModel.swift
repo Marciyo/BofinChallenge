@@ -13,49 +13,49 @@ final class CheckoutViewModel {
     @Published var products: [Product] = []
 
     /// Buy one apple, get second free
-    private var applePromotionEnabled = false
+    private(set) var applePromotionEnabled = false
 
     /// Buy two oranges, get third free
-    private var oragnePromotionEnabled = false
+    private(set) var oragnePromotionEnabled = false
 
     func addProduct(type: Product.ProductType) {
         let product = Product(type: type)
         products.append(product)
-
-        print("Added \(product). Current count: \(products.count)")
     }
 
     func prepareTotalString(from products: [Product]) -> String {
-        var totalPrice: Int = 0
+        let appleTotal = calculateTotal(for: .apple, from: products)
+        let orangeTotal = calculateTotal(for: .orange, from: products)
 
-        let apples = products.filter { $0.type == .apple }
-        let oranges = products.filter { $0.type == .orange }
+        return "Total: \(appleTotal + orangeTotal)p"
+    }
 
-        if applePromotionEnabled {
-            let everySecondFreeTotal = apples
-                .enumerated()
-                .filter { $0.offset % 2 == 0 }
-                .map { $0.element.price }
-                .reduce(0, +)
+    private func calculateTotal(for type: Product.ProductType, from products: [Product]) -> Int {
+        var promotionFilter: (Int) -> Bool = { _ in true }
 
-            totalPrice = totalPrice + everySecondFreeTotal
-        } else {
-            totalPrice = totalPrice + apples.map { $0.price }.reduce(0, +)
+        switch type {
+        case .apple:
+            if applePromotionEnabled {
+                promotionFilter = { offset in
+                   offset % 2 == 0
+                }
+            }
+        case .orange:
+            if oragnePromotionEnabled {
+                promotionFilter = { offset in
+                   offset % 3 != 2
+                }
+            }
         }
 
-        if oragnePromotionEnabled {
-            let everyThirdFreeTotal = oranges
-                .enumerated()
-                .filter { $0.offset % 3 != 2 }
-                .map { $0.element.price }
-                .reduce(0, +)
+        let totalForProductType = products
+            .filter { $0.type == type }
+            .enumerated()
+            .filter { promotionFilter($0.offset) }
+            .map { $0.element.price }
+            .reduce(0, +)
 
-            totalPrice = totalPrice + everyThirdFreeTotal
-        } else {
-            totalPrice = totalPrice + oranges.map { $0.price }.reduce(0, +)
-        }
-
-        return "Total: \(totalPrice)p"
+        return totalForProductType
     }
 
     func togglePromotion(for type: Product.ProductType) {
