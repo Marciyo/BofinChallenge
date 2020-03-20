@@ -23,7 +23,7 @@ struct Product: Identifiable, Hashable {
         case .apple:
             return 60
         case .orange:
-            return 20
+            return 25
         }
     }
 }

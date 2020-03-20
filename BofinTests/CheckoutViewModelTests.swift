@@ -25,11 +25,11 @@ class CheckoutViewModelTests: XCTestCase {
         XCTAssertEqual(apple.price, 60)
 
         let orange = Product(type: .orange)
-        XCTAssertEqual(orange.price, 20)
+        XCTAssertEqual(orange.price, 25)
 
-        let totalString = viewModel.prepareTotalString(from: [apple, orange])
+        let totalString = viewModel.prepareTotalString(from: [apple, apple, apple, orange, orange, orange])
 
-        XCTAssertEqual(totalString, "Total: 80p")
+        XCTAssertEqual(totalString, "Total: 255p")
     }
 
     func testAddingProduct() {
@@ -38,5 +38,23 @@ class CheckoutViewModelTests: XCTestCase {
         viewModel.addProduct(type: .apple)
 
         XCTAssertEqual(viewModel.products.count, 1)
+    }
+
+    func testApplePromotion() {
+        viewModel.togglePromotion(for: .apple)
+        let apple = Product(type: .apple)
+
+        let totalString = viewModel.prepareTotalString(from: [apple, apple, apple, apple])
+
+        XCTAssertEqual(totalString, "Total: 120p")
+    }
+
+    func testOrangePromotion() {
+        viewModel.togglePromotion(for: .orange)
+        let orange = Product(type: .orange)
+
+        let totalString = viewModel.prepareTotalString(from: [orange, orange, orange, orange])
+
+        XCTAssertEqual(totalString, "Total: 75p")
     }
 }
